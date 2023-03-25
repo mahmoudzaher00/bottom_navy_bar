@@ -1,6 +1,7 @@
 library bottom_navy_bar;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// A beautiful and animated bottom navigation that paints a rounded shape
 /// around its [items] to provide a wonderful look.
@@ -8,26 +9,21 @@ import 'package:flutter/material.dart';
 /// Update [selectedIndex] to change the selected item.
 /// [selectedIndex] is required and must not be null.
 class BottomNavyBar extends StatelessWidget {
+
   BottomNavyBar({
     Key? key,
     this.selectedIndex = 0,
     this.showElevation = true,
     this.iconSize = 24,
     this.backgroundColor,
-    this.shadowColor = Colors.black12,
     this.itemCornerRadius = 50,
     this.containerHeight = 56,
-    this.blurRadius = 2,
-    this.spreadRadius = 0,
-    this.borderRadius,
-    this.shadowOffset = Offset.zero,
-    this.itemPadding = const EdgeInsets.symmetric(horizontal: 4),
     this.animationDuration = const Duration(milliseconds: 270),
     this.mainAxisAlignment = MainAxisAlignment.spaceBetween,
     required this.items,
     required this.onItemSelected,
     this.curve = Curves.linear,
-  })  : assert(items.length >= 2 && items.length <= 5),
+  }) : assert(items.length >= 2 && items.length <= 5),
         super(key: key);
 
   /// The selected item is index. Changing this property will change and animate
@@ -38,11 +34,8 @@ class BottomNavyBar extends StatelessWidget {
   final double iconSize;
 
   /// The background color of the navigation bar. It defaults to
-  /// [ThemeData.bottomAppBarColor] if not provided.
+  /// [Theme.bottomAppBarColor] if not provided.
   final Color? backgroundColor;
-
-  /// Defines the shadow color of the navigation bar. Defaults to [Colors.black12].
-  final Color shadowColor;
 
   /// Whether this navigation bar should show a elevation. Defaults to true.
   final bool showElevation;
@@ -67,22 +60,6 @@ class BottomNavyBar extends StatelessWidget {
   /// Defines the bottom navigation bar height. Defaults to 56.
   final double containerHeight;
 
-  /// Used to configure the blurRadius of the [BoxShadow]. Defaults to 2.
-  final double blurRadius;
-
-  /// Used to configure the spreadRadius of the [BoxShadow]. Defaults to 0.
-  final double spreadRadius;
-
-  /// Used to configure the offset of the [BoxShadow]. Defaults to null.
-  final Offset shadowOffset;
-
-  /// Used to configure the borderRadius of the [BottomNavyBar]. Defaults to null.
-  final BorderRadiusGeometry? borderRadius;
-
-  /// Used to configure the padding of the [BottomNavyBarItem] [items].
-  /// Defaults to EdgeInsets.symmetric(horizontal: 4).
-  final EdgeInsets itemPadding;
-
   /// Used to configure the animation curve. Defaults to [Curves.linear].
   final Curve curve;
 
@@ -95,14 +72,11 @@ class BottomNavyBar extends StatelessWidget {
         color: bgColor,
         boxShadow: [
           if (showElevation)
-            BoxShadow(
-              color: shadowColor,
-              blurRadius: blurRadius,
-              spreadRadius: spreadRadius,
-              offset: shadowOffset,
+            const BoxShadow(
+              color: Colors.black12,
+              blurRadius: 2,
             ),
         ],
-        borderRadius: borderRadius,
       ),
       child: SafeArea(
         child: Container(
@@ -122,7 +96,6 @@ class BottomNavyBar extends StatelessWidget {
                   backgroundColor: bgColor,
                   itemCornerRadius: itemCornerRadius,
                   animationDuration: animationDuration,
-                  itemPadding: itemPadding,
                   curve: curve,
                 ),
               );
@@ -141,20 +114,18 @@ class _ItemWidget extends StatelessWidget {
   final Color backgroundColor;
   final double itemCornerRadius;
   final Duration animationDuration;
-  final EdgeInsets itemPadding;
   final Curve curve;
 
   const _ItemWidget({
     Key? key,
-    required this.iconSize,
-    required this.isSelected,
     required this.item,
+    required this.isSelected,
     required this.backgroundColor,
-    required this.itemCornerRadius,
     required this.animationDuration,
-    required this.itemPadding,
+    required this.itemCornerRadius,
+    required this.iconSize,
     this.curve = Curves.linear,
-  }) : super(key: key);
+  })  : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +139,7 @@ class _ItemWidget extends StatelessWidget {
         curve: curve,
         decoration: BoxDecoration(
           color:
-              isSelected ? item.activeColor.withOpacity(0.2) : backgroundColor,
+          isSelected ? item.activeColor.withOpacity(0.2) : backgroundColor,
           borderRadius: BorderRadius.circular(itemCornerRadius),
         ),
         child: SingleChildScrollView(
@@ -176,27 +147,27 @@ class _ItemWidget extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(),
           child: Container(
             width: isSelected ? 130 : 50,
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            padding: EdgeInsets.symmetric(horizontal: 0),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+              children: <Widget>[
                 IconTheme(
                   data: IconThemeData(
                     size: iconSize,
                     color: isSelected
                         ? item.activeColor.withOpacity(1)
                         : item.inactiveColor == null
-                            ? item.activeColor
-                            : item.inactiveColor,
+                        ? item.activeColor
+                        : item.inactiveColor,
                   ),
                   child: item.icon,
                 ),
                 if (isSelected)
                   Expanded(
                     child: Container(
-                      padding: itemPadding,
+                      padding: EdgeInsets.symmetric(horizontal: 4),
                       child: DefaultTextStyle.merge(
                         style: TextStyle(
                           color: item.activeColor,
@@ -219,6 +190,7 @@ class _ItemWidget extends StatelessWidget {
 
 /// The [BottomNavyBar.items] definition.
 class BottomNavyBarItem {
+
   BottomNavyBarItem({
     required this.icon,
     required this.title,
@@ -244,4 +216,5 @@ class BottomNavyBarItem {
   ///
   /// This will take effect only if [title] it a [Text] widget.
   final TextAlign? textAlign;
+
 }
